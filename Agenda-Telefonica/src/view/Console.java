@@ -69,6 +69,7 @@ public class Console {
                         String nome = scanner.next();
                         System.out.print("Digite o sobrenome do contato: ");
                         String sobrenome = scanner.next();
+                        scanner.nextLine();
                         ContatosDTO contato = new ContatosDTO(nome, sobrenome, null);
 
                         _contatosController.criarContato(contato);
