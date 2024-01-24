@@ -1,14 +1,22 @@
 package models;
 
+import java.util.List;
+
 public class Contatos {
     private Long id;
     private String nome;
     private String sobrenome;
-    private String telefone;
+    private List<Telefone> telefone;
 
-    Contatos(String nome, String telefone){
+    public Contatos(String nome, String sobrenome, List<Telefone> telefone) {
         this.nome = nome;
+        this.sobrenome = sobrenome;
         this.telefone = telefone;
+    }
+
+    public Contatos(String nome, String sobrenome) {
+        this.nome = nome;
+        this.sobrenome = sobrenome;
     }
 
     public Long getId() {
@@ -27,11 +35,11 @@ public class Contatos {
         this.nome = nome;
     }
 
-    public String getTelefone() {
+    public List<Telefone> getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(String telefone) {
+    public void setTelefone(List<Telefone> telefone) {
         this.telefone = telefone;
     }
 

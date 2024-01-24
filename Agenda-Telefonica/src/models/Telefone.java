@@ -4,10 +4,12 @@ public class Telefone {
     private Long id;
     private String ddd;
     private String numero;
+    private Long contatosId;
     
-    public Telefone(String ddd, String numero) {
+    public Telefone(String ddd, String numero, Long contatosId) {
         this.ddd = ddd;
         this.numero = numero;
+        this.contatosId = contatosId;
     }
 
     public Long getId() {
@@ -32,6 +34,14 @@ public class Telefone {
 
     public void setNumero(String numero) {
         this.numero = numero;
+    }
+
+    public Long getContatosId() {
+        return contatosId;
+    }
+
+    public void setContatosId(Long contatosId) {
+        this.contatosId = contatosId;
     }
 
 }
