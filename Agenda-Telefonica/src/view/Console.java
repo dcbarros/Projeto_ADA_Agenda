@@ -40,6 +40,11 @@ public class Console {
         }
     }
 
+    private static void limparTela(){
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
     public static void consoleApp(){
         criaBanco();
         ContatosController _contatosController = new ContatosController();
@@ -47,8 +52,7 @@ public class Console {
         Scanner scanner = new Scanner(System.in);
         boolean isOpen = true;
 
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        limparTela();
 
         while(isOpen){
             System.out.println("##################\n##### AGENDA #####\n##################\n");
@@ -58,22 +62,30 @@ public class Console {
             String selecaoSTR = scanner.nextLine();
             try {
                 int selecao = Integer.parseInt(selecaoSTR);
-                System.out.println("\n--------------------");
+                //System.out.println("\n--------------------");
 
                 switch (selecao) {
                     case 1:
-                        break;
-                    case 2:
 
+                        limparTela();
+                        System.out.printf("%-30sLista de Contatos%-30s\n","","");
+                        _contatosController.listarContatos();
+                        System.out.println("\nSair da seleção? (Aperte qualquer tecla)");
+                        scanner.nextLine();
+                        limparTela();
+                        break;
+
+                    case 2:
+                        limparTela();
                         System.out.print("Digite o nome do contato: ");
                         String nome = scanner.next();
                         System.out.print("Digite o sobrenome do contato: ");
                         String sobrenome = scanner.next();
                         scanner.nextLine();
+                        limparTela();
                         ContatosDTO contato = new ContatosDTO(nome, sobrenome, null);
 
                         _contatosController.criarContato(contato);
-
                         break;
 
                     case 3:
@@ -81,23 +93,25 @@ public class Console {
                     case 4:
                         break;
                     case 5:
-                    String saudacao = saudacao();
-                    String contracao = saudacao == " Bom dia" ? " um" : " uma";
+
+                        limparTela();
+                        String saudacao = saudacao();
+                        String contracao = saudacao == " Bom dia" ? " um" : " uma";
                         System.out.println("Tenha" + contracao + saudacao + "\n");
                         isOpen = false;
                         break;
+
                     default:
-                        System.out.print("\033[H\033[2J");
-                        System.out.flush();
+                        limparTela();
                         System.out.println("Erro: Seleção Inválida!\n");
                         break;
                 }
             } catch (NumberFormatException e) {
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
+                limparTela();
                 System.out.println("Erro: Por favor digite um número válido!\n");
             } 
         }
+
         scanner.close();
     }
 

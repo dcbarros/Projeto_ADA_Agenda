@@ -5,14 +5,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 import models.Contatos;
 import models.DTO.ContatosDTO;
 
 public class ContatosService {
 
-
-    
+    String diretorio = "Agenda-Telefonica\\src\\db";
+    String arquivoContato = "contatos.txt";
+    String arquivoTelefones = "telefones.txt";
 
     public void criarContato(ContatosDTO request){
         
@@ -22,8 +24,6 @@ public class ContatosService {
         if(contatoEValido(novoContato)){
             try{
 
-                String diretorio = "Agenda-Telefonica\\src\\db";
-                String arquivoContato = "contatos.txt";
                 File arquivo = new File(diretorio,arquivoContato);
 
                 try(FileWriter fw = new FileWriter(arquivo,true)) {
@@ -36,6 +36,7 @@ public class ContatosService {
                     System.out.println("Ocorreu um problema: ");
                     System.out.println(e.getMessage());
                 }
+
             }catch(Exception e){
                 System.out.print("\033[H\033[2J");
                 System.out.flush();
@@ -43,6 +44,30 @@ public class ContatosService {
             }
         }
 
+    }
+
+    public void listarContatos(){
+
+        File arquivo = new File(diretorio,arquivoContato);
+        try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
+            
+            String linha;
+
+            while ((linha = br.readLine()) != null) {
+            String[] partes = linha.split("\\|");
+
+            String id = partes[0];
+            String nomeCompleto = partes[1]+" "+partes[2];
+
+            String contatos = String.format("Id: %-10s Nome: %-30s Telefone(s): %s",id,nomeCompleto,null);
+            System.out.println(contatos);
+            
+        }
+        } catch (IOException e) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            System.out.println("Ocorreu um erro: " + e.getMessage());
+        }
     }
 
     private boolean contatoEValido(Contatos input){
@@ -78,4 +103,5 @@ public class ContatosService {
             System.out.println("Ocorreu um erro: " + e.getMessage());
         }
     }
+
 }
