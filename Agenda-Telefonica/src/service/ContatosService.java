@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import models.Contatos;
 import models.Telefone;
@@ -69,6 +70,34 @@ public class ContatosService {
         }
     }
 
+    public void atualizarContato(Long id){
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("1 - Nome\n2 - Sobrenome\nNúmero de Telefone\nO que deseja atualizar? ");
+        String selecao = scanner.nextLine();
+        try{
+            switch (selecao) {
+                case "1":
+                    
+                    break;
+                case "2":
+                    
+                    break;
+                case "3":
+                    
+                    break;
+                case "4":
+                    
+                    break;           
+                default:
+
+                    break;
+            }
+        }catch(Exception e){
+
+        }
+    }
+
+    //private void atualizaLinha(String )
     private boolean contatoEValido(Contatos input){
         if(input.getNome().length() > 15 || input.getSobrenome().length() > 15){
             System.out.println("O nome ou sobrenome tem mais que 15 caracteres");

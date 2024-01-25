@@ -13,4 +13,8 @@ public class ContatosController {
     public void listarContatos(){
         _contatosService.listarContatos();
     }
+    
+    public void atualizarContato(Long id){}
+
+    public void removerContato(Long id){}
 }

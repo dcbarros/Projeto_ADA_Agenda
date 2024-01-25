@@ -58,16 +58,14 @@ public class Console {
         while(isOpen){
 
             System.out.println("##################\n##### AGENDA #####\n##################\n");
-            System.out.println("1 - Listar Contatos\n2 - Adicionar Contato\n3 - Remover Contato\n4 - Editar Contato\n5 - Sair");
+            System.out.println("1 - Listar Contatos\n2 - Adicionar Contato\n3 - Editar Contato\n4 - Remover Contato\n5 - Sair");
             System.out.println("\n--------------------");
             System.out.print("Digite sua Opção: ");
-            String selecaoSTR = scanner.nextLine();
+            String selecao = scanner.nextLine();
             
             try {
-
-                int selecao = Integer.parseInt(selecaoSTR);
                 switch (selecao) {
-                    case 1:
+                    case "1":
 
                         limparTela();
                         System.out.printf("%-30sLista de Contatos%-30s\n\n","","");
@@ -77,7 +75,7 @@ public class Console {
                         limparTela();
                         break;
 
-                    case 2:
+                    case "2":
 
                         limparTela();
                         System.out.print("Digite o nome do contato: ");
@@ -88,9 +86,13 @@ public class Console {
                         ContatosDTO contato = new ContatosDTO(nome, sobrenome, listaTelefones);
 
                         scanner.nextLine();
-
+                        System.out.println("O usuário só pode adicionar dois números");
                         System.out.printf("Quantos números serão adicionados ao contato %s %s: ", nome,sobrenome);
                         int totalTelefones = scanner.nextInt();
+                        scanner.nextLine();
+                        if(totalTelefones < 0 || totalTelefones > 2){
+                            throw new Exception("Número de contatos telefônicos excedidos\n");
+                        }
 
                         for (int i = 0; i < totalTelefones; i++) {
                             System.out.printf("(%d) Qual o ddd do contato: ", i + 1);
@@ -110,11 +112,18 @@ public class Console {
                         _contatosController.criarContato(contato);
                         break;
 
-                    case 3:
+                    case "3":
+                        System.out.print("Digite o id do usuário que deseja editar: ");
+                        Long idUpdate = scanner.nextLong();
+                        _contatosController.atualizarContato(idUpdate);
                         break;
-                    case 4:
+                    case "4":
+                        System.out.print("Digite o id do usuário que deseja apagar: ");
+                        Long idRemove = scanner.nextLong();
+                        limparTela();
+                        _contatosController.removerContato(idRemove);
                         break;
-                    case 5:
+                    case "5":
 
                         limparTela();
                         String saudacao = saudacao();
@@ -128,9 +137,6 @@ public class Console {
                         System.out.println("Erro: Seleção Inválida!\n");
                         break;
                 }
-            } catch (NumberFormatException e) {
-                limparTela();
-                System.out.println("Erro: Por favor digite um número válido!\n");
             } catch (Exception e){
                 limparTela();
                 System.out.println("Erro: " + e.getMessage());
