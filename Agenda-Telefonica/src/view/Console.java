@@ -183,6 +183,7 @@ public class Console {
                         System.out.println("Número atualizado com sucesso!\n");
                         break;
                     case "4":
+                        limparTela();
                         System.out.print("Digite o id do usuário que deseja apagar: ");
                         Long idRemove = scanner.nextLong();
                         limparTela();

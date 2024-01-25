@@ -10,7 +10,7 @@ public class ContatosController {
     public void criarContato(ContatosDTO request) throws Exception{
         _contatosService.criarContato(request);
     }
-    public void listarContatos(){
+    public void listarContatos() throws Exception{
         _contatosService.listarContatos();
     }
 

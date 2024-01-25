@@ -47,7 +47,7 @@ public class ContatosService {
 
     }
 
-    public void listarContatos(){
+    public void listarContatos() throws Exception{
 
         File arquivo = new File(diretorio,arquivoContato);
         try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
@@ -65,10 +65,8 @@ public class ContatosService {
                 System.out.println(contatos);
             
         }
-        } catch (IOException e) {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
-            System.out.println("Ocorreu um erro: " + e.getMessage());
+        } catch (Exception e) {
+            throw new Exception("Ocorreu um erro na leitura do banco\n");
         }
     }
 
