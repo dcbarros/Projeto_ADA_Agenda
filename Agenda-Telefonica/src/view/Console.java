@@ -91,6 +91,7 @@ public class Console {
                         _contatosController.listarContatos();
                         System.out.println("\nSair da seleção? (Aperte qualquer tecla)");
                         scanner.nextLine();
+                        scanner.nextLine();
                         limparTela();
                         break;
 
