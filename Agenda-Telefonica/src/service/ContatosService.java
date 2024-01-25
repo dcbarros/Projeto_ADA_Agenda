@@ -74,6 +74,7 @@ public class ContatosService {
     }
 
     public void atualizarContato(Long id, String update, int selecao, boolean append) throws Exception{
+        
         if(append){
             existeTelefone(update);
             List<String> tabela = lerTabela();
@@ -91,6 +92,18 @@ public class ContatosService {
             escreverArquivo(tabela);
         }
         
+    }
+
+    public void removerContato(Long id) throws Exception{
+        try {
+            List<String> tabela = lerTabela();
+            final int index = localizarIndex(id);
+            if(index == -1){throw new Exception("id do contato não existe");}
+            tabela.remove(index);
+            escreverArquivo(tabela);
+        } catch (Exception e) {
+            throw new Exception("Erro na execução da remoção do contato!\nErro: "+e.getMessage());
+        }
     }
 
     private String reconstruirString(String[] input){
@@ -203,4 +216,5 @@ public class ContatosService {
             System.out.println("Ocorreu um erro: " + e.getMessage());
         }
     }
+
 }

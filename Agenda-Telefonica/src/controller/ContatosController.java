@@ -18,5 +18,7 @@ public class ContatosController {
         _contatosService.atualizarContato(id, update,selecao, append);
     }
 
-    public void removerContato(Long id){}
+    public void removerContato(Long id) throws Exception{
+        _contatosService.removerContato(id);
+    }
 }

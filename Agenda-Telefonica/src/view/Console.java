@@ -179,14 +179,16 @@ public class Console {
                             default:
                                 throw new Exception("Não existe essa opção no menu!");
                         }
-                        System.out.println("Número atualizado com sucesso!");
-                        //limparTela();
+                        limparTela();
+                        System.out.println("Número atualizado com sucesso!\n");
                         break;
                     case "4":
                         System.out.print("Digite o id do usuário que deseja apagar: ");
                         Long idRemove = scanner.nextLong();
                         limparTela();
                         _contatosController.removerContato(idRemove);
+                        limparTela();
+                        System.out.println("Contato removido com sucesso\n");
                         break;
                     case "5":
 
