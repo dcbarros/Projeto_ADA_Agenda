@@ -2,6 +2,7 @@ package view;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,7 +14,6 @@ import java.util.Scanner;
 import models.Telefone;
 import models.DTO.ContatosDTO;
 import controller.ContatosController;
-import controller.TelefoneController;
 
 public class Console {
     
@@ -46,22 +46,41 @@ public class Console {
         System.out.flush();
     }
 
+    private static boolean existeId(Long id) throws FileNotFoundException, IOException{
+        String diretorio = "Agenda-Telefonica\\src\\db";
+        String arquivoContato = "contatos.txt";
+
+        File arquivo = new File(diretorio, arquivoContato);
+        try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
+            String linha;
+            String[] partes;
+            while ((linha = br.readLine()) != null) {
+                partes = linha.split("\\|");
+                if(Long.parseLong(partes[0]) == id){
+                    return true;
+                }
+
+            }
+            return false;
+        }
+    }
+
     public static void consoleApp() throws Exception{
         criaBanco();
         ContatosController _contatosController = new ContatosController();
 
-        Scanner scanner = new Scanner(System.in);
         boolean isOpen = true;
-
+        
         limparTela();
-
+        
+        Scanner scanner = new Scanner(System.in);
         while(isOpen){
 
             System.out.println("##################\n##### AGENDA #####\n##################\n");
             System.out.println("1 - Listar Contatos\n2 - Adicionar Contato\n3 - Editar Contato\n4 - Remover Contato\n5 - Sair");
             System.out.println("\n--------------------");
             System.out.print("Digite sua Opção: ");
-            String selecao = scanner.nextLine();
+            String selecao = scanner.next();
             
             try {
                 switch (selecao) {
@@ -78,24 +97,22 @@ public class Console {
                     case "2":
 
                         limparTela();
-                        System.out.print("Digite o nome do contato: ");
+                        System.out.println("Digite o nome do contato: ");
                         String nome = scanner.next();
-                        System.out.print("Digite o sobrenome do contato: ");
+                        System.out.println("Digite o sobrenome do contato: ");
                         String sobrenome = scanner.next();
                         List<Telefone> listaTelefones = new ArrayList<>();
                         ContatosDTO contato = new ContatosDTO(nome, sobrenome, listaTelefones);
 
-                        scanner.nextLine();
-                        System.out.println("O usuário só pode adicionar dois números");
+                        //scanner.nextLine();
+
                         System.out.printf("Quantos números serão adicionados ao contato %s %s: ", nome,sobrenome);
                         int totalTelefones = scanner.nextInt();
-                        scanner.nextLine();
-                        if(totalTelefones < 0 || totalTelefones > 2){
-                            throw new Exception("Número de contatos telefônicos excedidos\n");
-                        }
+                        //scanner.nextLine();
+
 
                         for (int i = 0; i < totalTelefones; i++) {
-                            System.out.printf("(%d) Qual o ddd do contato: ", i + 1);
+                            System.out.printf("(%d) Qual o ddd do contato, o DDD deve ter apenas 2 números: ", i + 1);
                             String ddd = scanner.next();
                         
                             System.out.printf("(%d) Qual o número do contato: ", i + 1);
@@ -106,16 +123,63 @@ public class Console {
                         }
 
                         contato.setTelefone(listaTelefones);
-                        scanner.nextLine();
+                        //scanner.nextLine();
                         limparTela();
 
                         _contatosController.criarContato(contato);
                         break;
 
                     case "3":
+                        limparTela();
                         System.out.print("Digite o id do usuário que deseja editar: ");
                         Long idUpdate = scanner.nextLong();
-                        _contatosController.atualizarContato(idUpdate);
+                        if(!existeId(idUpdate)){
+                            throw new Exception("O id digitado não existe dentro do banco de dados");
+                        }
+                        limparTela();
+                        System.out.println("Menu de Atualização do contato");
+                        System.out.print("\n1 - Nome\n2 - Sobrenome\n3 - Adicionar número ao contato\n\nO que deseja atualizar? ");
+                        String selecaoAtualizar = scanner.next();
+                        scanner.nextLine();
+                        switch (selecaoAtualizar) {
+                            case "1":
+                                limparTela();
+                                System.out.print("Digite o novo nome para o contato: ");
+                                String novoNome = scanner.nextLine();
+                                _contatosController.atualizarContato(idUpdate, novoNome,Integer.parseInt(selecaoAtualizar), false);
+                            break;
+            
+                            case "2":
+                                limparTela();
+                                System.out.print("Digite o novo Sobrenome para o contato: ");
+                                String novoSobrenome = scanner.nextLine();
+                                _contatosController.atualizarContato(idUpdate, novoSobrenome,Integer.parseInt(selecaoAtualizar), false);
+                                break;   
+                            case "3":
+                                limparTela();
+                                System.out.print("Digite o ddd do seu número: ");
+                                String novoDdd = scanner.nextLine();
+                                System.out.print("Digite o novo telefone para o contato: ");
+                                String novoNumero = scanner.nextLine();
+
+                                try {
+                                    Long.parseLong(novoNumero);
+                                    if(novoDdd.length() != 2 || novoNumero.length() > 9 || novoNumero.length() < 8){
+                                        throw new Exception("Número ou DDD não é válido");
+                                    }
+                                } catch (Exception e) {
+                                    throw new Exception("Número não é válido");
+                                }
+
+
+                                String novoTelefone = String.format("(%s) %s", novoDdd, novoNumero);
+                                _contatosController.atualizarContato(idUpdate, novoTelefone,Integer.parseInt(selecaoAtualizar), true);
+                                break;       
+                            default:
+                                throw new Exception("Não existe essa opção no menu!");
+                        }
+                        System.out.println("Número atualizado com sucesso!");
+                        //limparTela();
                         break;
                     case "4":
                         System.out.print("Digite o id do usuário que deseja apagar: ");
@@ -134,16 +198,16 @@ public class Console {
 
                     default:
                         limparTela();
-                        System.out.println("Erro: Seleção Inválida!\n");
-                        break;
+                        throw new Exception("Não existe essa opção no menu!");
                 }
-            } catch (Exception e){
+            } 
+            catch (Exception e){
                 limparTela();
                 System.out.println("Erro: " + e.getMessage());
             }
 
         }
-
         scanner.close();
+
     }
 }

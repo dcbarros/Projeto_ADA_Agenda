@@ -1,10 +1,13 @@
 package service;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -27,7 +30,7 @@ public class ContatosService {
             try{
                 File arquivo = new File(diretorio,arquivoContato);
                 try(FileWriter fw = new FileWriter(arquivo,true)) {
-                    String linha = novoContato.getId()+"|"+novoContato.getNome()+"|"+novoContato.getSobrenome()+"|"+listarTelefones(novoContato)+"\n";
+                    String linha = novoContato.getId()+"|"+novoContato.getNome()+"|"+novoContato.getSobrenome()+"|"+listaTelefones(novoContato)+"\n";
                     fw.write(linha);
                     fw.flush();
                 } catch (IOException e) {
@@ -53,14 +56,14 @@ public class ContatosService {
             String linha;
 
             while ((linha = br.readLine()) != null) {
-            String[] partes = linha.split("\\|");
+                String[] partes = linha.split("\\|");
 
-            String id = partes[0];
-            String nomeCompleto = partes[1]+" "+partes[2];
-            String listaTelefonica = partes[3];
+                String id = partes[0];
+                String nomeCompleto = partes[1]+" "+partes[2];
+                String listaTelefonica = partes[3];
 
-            String contatos = String.format("Id: %-10s Nome: %-30s Telefone(s): %s",id,nomeCompleto,listaTelefonica);
-            System.out.println(contatos);
+                String contatos = String.format("Id: %-10s Nome: %-30s Telefone(s): %s",id,nomeCompleto,listaTelefonica);
+                System.out.println(contatos);
             
         }
         } catch (IOException e) {
@@ -70,34 +73,72 @@ public class ContatosService {
         }
     }
 
-    public void atualizarContato(Long id){
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("1 - Nome\n2 - Sobrenome\nNúmero de Telefone\nO que deseja atualizar? ");
-        String selecao = scanner.nextLine();
-        try{
-            switch (selecao) {
-                case "1":
-                    
-                    break;
-                case "2":
-                    
-                    break;
-                case "3":
-                    
-                    break;
-                case "4":
-                    
-                    break;           
-                default:
+    public void atualizarContato(Long id, String update, int selecao, boolean append) throws Exception{
+        if(append){
+            existeTelefone(update);
+            List<String> tabela = lerTabela();
+            int index = localizarIndex(id);
+            String[] particionar = tabela.get(index).split("\\|");
+            particionar[selecao] += update + " ";
+            tabela.set(index, reconstruirString(particionar));
+            escreverArquivo(tabela);
+        }else{
+            List<String> tabela = lerTabela();
+            int index = localizarIndex(id);
+            String[] particionar = tabela.get(index).split("\\|");
+            particionar[selecao] = update;
+            tabela.set(index, reconstruirString(particionar));
+            escreverArquivo(tabela);
+        }
+        
+    }
 
-                    break;
+    private String reconstruirString(String[] input){
+        return String.format("%s|%s|%s|%s", input[0],input[1],input[2],input[3]);
+    }
+    
+    private List<String> lerTabela() throws FileNotFoundException, IOException{
+        List<String> linhas = new ArrayList<>();
+        File arquivo = new File(diretorio, arquivoContato);
+        try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                linhas.add(linha);
             }
-        }catch(Exception e){
+        }
 
+        return linhas;
+    }
+
+    private int localizarIndex(Long id) throws NumberFormatException, IOException{
+        File arquivo = new File(diretorio, arquivoContato);
+        try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
+            String linha;
+            String[] partes;
+            int contador = 0;
+            while ((linha = br.readLine()) != null) {
+                partes = linha.split("\\|");
+                if(Long.parseLong(partes[0]) == id){
+                    return contador;
+                }else{
+                    contador++;
+                }
+
+            }
+            return -1;
         }
     }
 
-    //private void atualizaLinha(String )
+    private void escreverArquivo(List<String> input) throws IOException{
+        File arquivo = new File(diretorio, arquivoContato);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))) {
+            for (String linha : input) {
+                bw.write(linha);
+                bw.newLine();
+            }
+        }
+    }
+
     private boolean contatoEValido(Contatos input){
         if(input.getNome().length() > 15 || input.getSobrenome().length() > 15){
             System.out.println("O nome ou sobrenome tem mais que 15 caracteres");
@@ -130,7 +171,7 @@ public class ContatosService {
         }
     }
 
-    private String listarTelefones(Contatos contatos){
+    private String listaTelefones(Contatos contatos){
         String linha = " ";
         try{
             for (Telefone tel : contatos.getTelefone()) {
@@ -142,4 +183,24 @@ public class ContatosService {
         return linha;
     }
 
+    private void existeTelefone(String telefone) throws Exception{
+
+        String diretorio = "Agenda-Telefonica\\src\\db";
+        String arquivoContato = "contatos.txt";
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(diretorio,arquivoContato)))) {
+            String linha;
+
+            while((linha = br.readLine()) != null){
+                if(linha.contains(telefone)){
+                    throw new Exception("Número já consta na lista de contatos!!\n");
+                }
+            }
+
+        }catch (IOException e){
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            System.out.println("Ocorreu um erro: " + e.getMessage());
+        }
+    }
 }
