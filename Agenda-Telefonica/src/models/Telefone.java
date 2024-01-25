@@ -1,11 +1,14 @@
 package models;
 
 public class Telefone {
-    
+
     private String ddd;
     private String numero;
     
-    public Telefone(String ddd, String numero) {
+    public Telefone(String ddd, String numero) throws Exception {
+        if(ddd.length()!=2 || numero.length() < 8 || numero.length() > 9){
+            throw new Exception("Número Inválido!");
+        }
         this.ddd = ddd;
         this.numero = numero;
     }

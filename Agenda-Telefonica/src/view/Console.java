@@ -1,6 +1,8 @@
 package view;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -44,7 +46,7 @@ public class Console {
         System.out.flush();
     }
 
-    public static void consoleApp(){
+    public static void consoleApp() throws Exception{
         criaBanco();
         ContatosController _contatosController = new ContatosController();
 
@@ -104,6 +106,7 @@ public class Console {
                         contato.setTelefone(listaTelefones);
                         scanner.nextLine();
                         limparTela();
+
                         _contatosController.criarContato(contato);
                         break;
 
@@ -128,10 +131,13 @@ public class Console {
             } catch (NumberFormatException e) {
                 limparTela();
                 System.out.println("Erro: Por favor digite um número válido!\n");
-            } 
+            } catch (Exception e){
+                limparTela();
+                System.out.println("Erro: " + e.getMessage());
+            }
+
         }
 
         scanner.close();
     }
-
 }

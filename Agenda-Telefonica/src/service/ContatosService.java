@@ -16,9 +16,8 @@ public class ContatosService {
 
     String diretorio = "Agenda-Telefonica\\src\\db";
     String arquivoContato = "contatos.txt";
-    String arquivoTelefones = "telefones.txt";
 
-    public void criarContato(ContatosDTO request){
+    public void criarContato(ContatosDTO request) throws Exception{
         
         Contatos novoContato = new Contatos(request.getNome(), request.getSobrenome(),request.getTelefone());
         addId(novoContato);
@@ -79,8 +78,6 @@ public class ContatosService {
     }
 
     private void addId(Contatos input){
-        String diretorio = "Agenda-Telefonica\\src\\db";
-        String arquivoContato = "contatos.txt";
 
         try (BufferedReader br = new BufferedReader(new FileReader(new File(diretorio,arquivoContato)))) {
             String linha;
