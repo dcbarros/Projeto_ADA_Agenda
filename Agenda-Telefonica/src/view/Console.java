@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+import models.Telefone;
 import models.DTO.ContatosDTO;
 import controller.ContatosController;
 import controller.TelefoneController;
@@ -23,16 +26,12 @@ public class Console {
     private static void criaBanco(){
         String diretorio = "Agenda-Telefonica\\src\\db";
         String arquivoContato = "contatos.txt";
-        String aquivoTelefones = "telefones.txt";
 
         File tabelaContatos = new File(diretorio, arquivoContato);
-        File tabelaTelefone = new File(diretorio, aquivoTelefones);
-        if(!tabelaContatos.exists() || !tabelaTelefone.exists()){
+        if(!tabelaContatos.exists()){
             try{
                 FileWriter fwContatos = new FileWriter(tabelaContatos);
-                FileWriter fwTelefone = new FileWriter(tabelaTelefone);
                 fwContatos.close();
-                fwTelefone.close();
             }catch(IOException e){
                 System.out.println("Ocorreu um problema: ");
                 System.out.println(e.getMessage());
@@ -55,20 +54,21 @@ public class Console {
         limparTela();
 
         while(isOpen){
+
             System.out.println("##################\n##### AGENDA #####\n##################\n");
             System.out.println("1 - Listar Contatos\n2 - Adicionar Contato\n3 - Remover Contato\n4 - Editar Contato\n5 - Sair");
             System.out.println("\n--------------------");
             System.out.print("Digite sua Opção: ");
             String selecaoSTR = scanner.nextLine();
+            
             try {
-                int selecao = Integer.parseInt(selecaoSTR);
-                //System.out.println("\n--------------------");
 
+                int selecao = Integer.parseInt(selecaoSTR);
                 switch (selecao) {
                     case 1:
 
                         limparTela();
-                        System.out.printf("%-30sLista de Contatos%-30s\n","","");
+                        System.out.printf("%-30sLista de Contatos%-30s\n\n","","");
                         _contatosController.listarContatos();
                         System.out.println("\nSair da seleção? (Aperte qualquer tecla)");
                         scanner.nextLine();
@@ -76,15 +76,34 @@ public class Console {
                         break;
 
                     case 2:
+
                         limparTela();
                         System.out.print("Digite o nome do contato: ");
                         String nome = scanner.next();
                         System.out.print("Digite o sobrenome do contato: ");
                         String sobrenome = scanner.next();
+                        List<Telefone> listaTelefones = new ArrayList<>();
+                        ContatosDTO contato = new ContatosDTO(nome, sobrenome, listaTelefones);
+
+                        scanner.nextLine();
+
+                        System.out.printf("Quantos números serão adicionados ao contato %s %s: ", nome,sobrenome);
+                        int totalTelefones = scanner.nextInt();
+
+                        for (int i = 0; i < totalTelefones; i++) {
+                            System.out.printf("(%d) Qual o ddd do contato: ", i + 1);
+                            String ddd = scanner.next();
+                        
+                            System.out.printf("(%d) Qual o número do contato: ", i + 1);
+                            String numeroTelefone = scanner.next();
+                        
+                            Telefone telefone = new Telefone(ddd, numeroTelefone);
+                            listaTelefones.add(telefone);
+                        }
+
+                        contato.setTelefone(listaTelefones);
                         scanner.nextLine();
                         limparTela();
-                        ContatosDTO contato = new ContatosDTO(nome, sobrenome, null);
-
                         _contatosController.criarContato(contato);
                         break;
 

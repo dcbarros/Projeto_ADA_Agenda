@@ -6,8 +6,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import models.Contatos;
+import models.Telefone;
 import models.DTO.ContatosDTO;
 
 public class ContatosService {
@@ -18,23 +20,20 @@ public class ContatosService {
 
     public void criarContato(ContatosDTO request){
         
-        Contatos novoContato = new Contatos(request.getNome(), request.getSobrenome());
+        Contatos novoContato = new Contatos(request.getNome(), request.getSobrenome(),request.getTelefone());
         addId(novoContato);
 
         if(contatoEValido(novoContato)){
             try{
-
                 File arquivo = new File(diretorio,arquivoContato);
-
                 try(FileWriter fw = new FileWriter(arquivo,true)) {
-                    String linha = novoContato.getId()+"|"+novoContato.getNome()+"|"+novoContato.getSobrenome()+"\n";
+                    String linha = novoContato.getId()+"|"+novoContato.getNome()+"|"+novoContato.getSobrenome()+"|"+listarTelefones(novoContato)+"\n";
                     fw.write(linha);
                     fw.flush();
                 } catch (IOException e) {
                     System.out.print("\033[H\033[2J");
                     System.out.flush();
-                    System.out.println("Ocorreu um problema: ");
-                    System.out.println(e.getMessage());
+                    System.out.println("Ocorreu um problema: " + e.getMessage());
                 }
 
             }catch(Exception e){
@@ -58,8 +57,9 @@ public class ContatosService {
 
             String id = partes[0];
             String nomeCompleto = partes[1]+" "+partes[2];
+            String listaTelefonica = partes[3];
 
-            String contatos = String.format("Id: %-10s Nome: %-30s Telefone(s): %s",id,nomeCompleto,null);
+            String contatos = String.format("Id: %-10s Nome: %-30s Telefone(s): %s",id,nomeCompleto,listaTelefonica);
             System.out.println(contatos);
             
         }
@@ -102,6 +102,18 @@ public class ContatosService {
             System.out.flush();
             System.out.println("Ocorreu um erro: " + e.getMessage());
         }
+    }
+
+    private String listarTelefones(Contatos contatos){
+        String linha = " ";
+        try{
+            for (Telefone tel : contatos.getTelefone()) {
+                linha += "(" + tel.getDdd() + ") " + tel.getNumero() + " ";
+            }
+        }catch(Exception e){
+            System.out.println(e.getCause());
+        }
+        return linha;
     }
 
 }

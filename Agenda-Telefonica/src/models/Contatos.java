@@ -14,11 +14,6 @@ public class Contatos {
         this.telefone = telefone;
     }
 
-    public Contatos(String nome, String sobrenome) {
-        this.nome = nome;
-        this.sobrenome = sobrenome;
-    }
-
     public Long getId() {
         return id;
     }
