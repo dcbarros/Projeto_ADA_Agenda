@@ -7,10 +7,13 @@ public class Telefone {
     
     public Telefone(String ddd, String numero) throws Exception {
         if(ddd.length()!=2 || numero.length() < 8 || numero.length() > 9){
-            throw new Exception("Número Inválido!");
+            throw new Exception("Número Inválido, verifique as regras:\nDDD deve ter dois números e o telefone deve possuir 8 ou 9 números");
         }
         this.ddd = ddd;
         this.numero = numero;
+    }
+
+    public Telefone() {
     }
 
     public String getDdd() {
@@ -28,6 +31,5 @@ public class Telefone {
     public void setNumero(String numero) {
         this.numero = numero;
     }
-
 
 }

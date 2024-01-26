@@ -24,6 +24,7 @@ public class ContatosService {
         
         Contatos novoContato = new Contatos(request.getNome(), request.getSobrenome(),request.getTelefone());
         addId(novoContato);
+        existeTelefone(novoContato.getTelefone());
 
         if(contatoEValido(novoContato)){
             try{
@@ -52,21 +53,24 @@ public class ContatosService {
         File arquivo = new File(diretorio,arquivoContato);
         try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
             
-            String linha;
+            if(arquivo.length() != 0){
+                String linha;
+                
+                while ((linha = br.readLine()) != null) {
+                    String[] partes = linha.split("\\|");
+    
+                    String id = partes[0];
+                    String nomeCompleto = partes[1]+" "+partes[2];
+                    String listaTelefonica = partes[3];
+    
+                    String contatos = String.format("Id: %-10s Nome: %-30s Telefone(s): %s",id,nomeCompleto,listaTelefonica);
+                    System.out.println(contatos);
+                
+                }    
+            }else{throw new Exception("Não exitem contatos cadastrados no banco!\n");}
 
-            while ((linha = br.readLine()) != null) {
-                String[] partes = linha.split("\\|");
-
-                String id = partes[0];
-                String nomeCompleto = partes[1]+" "+partes[2];
-                String listaTelefonica = partes[3];
-
-                String contatos = String.format("Id: %-10s Nome: %-30s Telefone(s): %s",id,nomeCompleto,listaTelefonica);
-                System.out.println(contatos);
-            
-        }
         } catch (Exception e) {
-            throw new Exception("Ocorreu um erro na leitura do banco\n");
+            throw new Exception(e.getMessage());
         }
     }
 
@@ -84,6 +88,7 @@ public class ContatosService {
             List<String> tabela = lerTabela();
             int index = localizarIndex(id);
             String[] particionar = tabela.get(index).split("\\|");
+            if(update.length() > 15 || update.isEmpty()){throw new Exception("O contato deve possuir no máximo 15 caracteres e não pode ser vazio");}
             particionar[selecao] = update;
             tabela.set(index, reconstruirString(particionar));
             escreverArquivo(tabela);
@@ -157,7 +162,7 @@ public class ContatosService {
         return true;
     }
 
-    private void addId(Contatos input){
+    private void addId(Contatos input) throws IOException{
 
         try (BufferedReader br = new BufferedReader(new FileReader(new File(diretorio,arquivoContato)))) {
             String linha;
@@ -175,9 +180,7 @@ public class ContatosService {
             }
 
         }catch (IOException e){
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
-            System.out.println("Ocorreu um erro: " + e.getMessage());
+            throw new IOException("Não foi possível verificar o banco");
         }
     }
 
@@ -208,9 +211,28 @@ public class ContatosService {
             }
 
         }catch (IOException e){
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
-            System.out.println("Ocorreu um erro: " + e.getMessage());
+            throw new IOException("Não foi possível verificar o banco");
+        }
+    }
+
+    private void existeTelefone(List<Telefone> input) throws Exception{
+
+        String diretorio = "Agenda-Telefonica\\src\\db";
+        String arquivoContato = "contatos.txt";
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(diretorio,arquivoContato)))) {
+            for (Telefone telefone : input) {
+                String linha;
+    
+                while((linha = br.readLine()) != null){
+                    if(linha.contains(String.format("(%s) %s", telefone.getDdd(),telefone.getNumero()))){
+                        throw new Exception("Número já consta na lista de contatos!!\n");
+                    }
+                }
+            }
+
+        }catch (IOException e){
+            throw new IOException("Não foi possível verificar o banco");
         }
     }
 

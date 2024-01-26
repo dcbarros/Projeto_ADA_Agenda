@@ -98,18 +98,16 @@ public class Console {
                     case "2":
 
                         limparTela();
-                        System.out.println("Digite o nome do contato: ");
+                        System.out.print("Digite o nome do contato: ");
                         String nome = scanner.next();
-                        System.out.println("Digite o sobrenome do contato: ");
+                        System.out.print("Digite o sobrenome do contato: ");
                         String sobrenome = scanner.next();
                         List<Telefone> listaTelefones = new ArrayList<>();
                         ContatosDTO contato = new ContatosDTO(nome, sobrenome, listaTelefones);
 
-                        //scanner.nextLine();
-
                         System.out.printf("Quantos números serão adicionados ao contato %s %s: ", nome,sobrenome);
                         int totalTelefones = scanner.nextInt();
-                        //scanner.nextLine();
+
 
 
                         for (int i = 0; i < totalTelefones; i++) {
@@ -124,10 +122,12 @@ public class Console {
                         }
 
                         contato.setTelefone(listaTelefones);
-                        //scanner.nextLine();
+                        
                         limparTela();
 
                         _contatosController.criarContato(contato);
+                        limparTela();
+                        System.out.println("Contato criado com sucesso!\n");
                         break;
 
                     case "3":
@@ -157,30 +157,25 @@ public class Console {
                                 _contatosController.atualizarContato(idUpdate, novoSobrenome,Integer.parseInt(selecaoAtualizar), false);
                                 break;   
                             case "3":
-                                limparTela();
-                                System.out.print("Digite o ddd do seu número: ");
-                                String novoDdd = scanner.nextLine();
-                                System.out.print("Digite o novo telefone para o contato: ");
-                                String novoNumero = scanner.nextLine();
-
+                                limparTela();                                
                                 try {
-                                    Long.parseLong(novoNumero);
-                                    if(novoDdd.length() != 2 || novoNumero.length() > 9 || novoNumero.length() < 8){
-                                        throw new Exception("Número ou DDD não é válido");
-                                    }
+                                    Telefone telefone = new Telefone();
+                                    System.out.print("Digite o ddd do seu número: ");
+                                    telefone.setDdd(scanner.nextLine());
+                                    System.out.print("Digite o novo telefone para o contato: ");
+                                    telefone.setNumero(scanner.nextLine());
+                                    String novoTelefone = String.format("(%s) %s", telefone.getDdd(), telefone.getNumero());
+                                    _contatosController.atualizarContato(idUpdate, novoTelefone,Integer.parseInt(selecaoAtualizar), true);
                                 } catch (Exception e) {
-                                    throw new Exception("Número não é válido");
+                                    throw new Exception(e.getMessage());
                                 }
 
-
-                                String novoTelefone = String.format("(%s) %s", novoDdd, novoNumero);
-                                _contatosController.atualizarContato(idUpdate, novoTelefone,Integer.parseInt(selecaoAtualizar), true);
                                 break;       
                             default:
                                 throw new Exception("Não existe essa opção no menu!");
                         }
                         limparTela();
-                        System.out.println("Número atualizado com sucesso!\n");
+                        System.out.println("Contato atualizado com sucesso!\n");
                         break;
                     case "4":
                         limparTela();
